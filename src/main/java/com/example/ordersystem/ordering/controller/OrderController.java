@@ -2,13 +2,17 @@ package com.example.ordersystem.ordering.controller;
 
 import com.example.ordersystem.common.dto.CommonResDto;
 import com.example.ordersystem.ordering.domain.Ordering;
+import com.example.ordersystem.ordering.dto.OrderListResDto;
 import com.example.ordersystem.ordering.dto.OrderSaveReqDto;
 import com.example.ordersystem.ordering.service.OrderingService;
 import com.example.ordersystem.product.domain.Product;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class OrderController {
@@ -25,4 +29,13 @@ public class OrderController {
         CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED, "success created", ordering.getId());
         return new ResponseEntity<>(commonResDto, HttpStatus.CREATED);
     }
+
+    @GetMapping("/order/list")
+    public ResponseEntity<?> orderingList() {
+        List<OrderListResDto> orderList = orderingService.orderList();
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "success created", orderList);
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    }
+
+
 }

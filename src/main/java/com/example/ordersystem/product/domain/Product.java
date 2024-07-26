@@ -33,6 +33,7 @@ public class Product {
         this.imagePath = imagePath;
     }
 
+
     @Builder
     public Product(Long id, String name, String category, Integer price, Integer stockQuantity, String imagePath) {
         this.id = id;
@@ -45,5 +46,8 @@ public class Product {
 
     public ProductListResDto listFromEntity() {
         return ProductListResDto.builder().id(this.id).name(this.name).category(this.category).price(this.price).stockQuantity(this.stockQuantity).imagePath(imagePath).build();
+    }
+
+    public void updateStock(int quantity) {
     }
 }

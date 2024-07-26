@@ -1,5 +1,6 @@
 package com.example.ordersystem.ordering.domain;
 
+import com.example.ordersystem.ordering.dto.OrderListResDto;
 import com.example.ordersystem.product.domain.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,4 +30,12 @@ public class OrderDetail {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    public OrderListResDto.OrderDetailDto fromEntity() {
+        OrderListResDto.OrderDetailDto dto = OrderListResDto.OrderDetailDto.builder()
+                .productId(product.getId())
+                .productName(this.product.getName())
+                .count(this.quantity)
+                .build();
+        return dto;
+    }
 }
