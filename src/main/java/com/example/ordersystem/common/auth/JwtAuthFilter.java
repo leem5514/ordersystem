@@ -57,9 +57,9 @@ public class JwtAuthFilter extends GenericFilter {
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             log.error(e.getMessage());
-            HttpServletResponse res = (HttpServletResponse) response;
-            res.setStatus(HttpStatus.UNAUTHORIZED.value());
-            res.setContentType("application/json");
+            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+            httpServletResponse.setContentType("application/json");
             httpServletResponse.getWriter().write("token error");
         }
 

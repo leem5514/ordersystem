@@ -6,28 +6,31 @@ import com.example.ordersystem.member.domain.Member;
 import com.example.ordersystem.member.dto.MemberListDto;
 import com.example.ordersystem.member.dto.MemberLoginDto;
 import com.example.ordersystem.member.dto.MemberSaveDto;
+import com.example.ordersystem.member.repository.MemberRepository;
 import com.example.ordersystem.member.service.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//@RequestMapping("/member")
 @RestController
 public class MemberController {
-
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+
+    @Autowired
+    public MemberController(MemberService memberService, MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.memberService = memberService;
+        this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -52,7 +55,7 @@ public class MemberController {
         CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "success created", memberListDtos);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
-    @PostMapping("/doLogin")
+    @PostMapping("/member/doLogin")
     public ResponseEntity<?> doLogin(@RequestBody MemberLoginDto dto) {
         // email , pwd 일치 검증
         Member member = memberService.login(dto);

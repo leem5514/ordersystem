@@ -24,14 +24,18 @@ public class MemberService {
 
     private PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
     @Transactional
     public Member memberCreate(MemberSaveDto dto) {
 
         if (memberRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일 입니다");
+        }
+        if (dto.getPassword().length() < 8){
+            throw new IllegalArgumentException("비밀번호의 길이가 짧습니다.");
         }
         Member savedMember = memberRepository.save(dto.toEntity(passwordEncoder.encode(dto.getPassword())));
         return savedMember;

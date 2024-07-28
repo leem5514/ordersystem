@@ -22,14 +22,14 @@ public class MemberSaveDto {
     private String email;
 
     @NotEmpty(message = "email is essential")
-    @Size(min = 8, message = "password minimum length is 8")
+    //@Size(min = 8, message = "password minimum length is 8")
     private String password;
     private Address address;
 //    private String city;
 //    private String street;
 //    private String zipcode;
 
-    public Member toEntity(String encodedPassword) {
+    public Member toEntity(String password) {
         Member member = Member.builder()
                 .name(this.name)
                 .email(this.email)

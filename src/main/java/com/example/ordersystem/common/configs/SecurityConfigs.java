@@ -2,6 +2,7 @@ package com.example.ordersystem.common.configs;
 
 
 import com.example.ordersystem.common.auth.JwtAuthFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +14,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true) // PRE : 사전, POST: 사후 검증
 public class SecurityConfigs {
+//    @Autowired
+//    private JwtAuthFilter jwtAuthFilter;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity, JwtAuthFilter jwtAuthFilter) throws Exception {
         return httpSecurity
@@ -20,7 +23,7 @@ public class SecurityConfigs {
                 .cors().and() // CORS 활성화  // 다른 도메인끼리 통신 불가
                 .httpBasic().disable()
                 .authorizeRequests()
-                .antMatchers("/member/create ", "/" ," /doLogin")
+                .antMatchers("/member/create", "/" ,"/member/doLogin")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()
