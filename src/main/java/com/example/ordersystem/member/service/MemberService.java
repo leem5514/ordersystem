@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
     private PasswordEncoder passwordEncoder;
 
     public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {

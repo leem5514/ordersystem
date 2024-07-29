@@ -37,16 +37,4 @@ public class OrderSaveReqDto {
 //            .orderstatus(OrderStatus.ORDERED)
                 .build();
     }
-
-
-//    public Ordering toEntity(Member member) {
-//
-//        Ordering ordering = Ordering.builder()
-//                .member(member)
-//                .orderstatus(orderStatus.ORDERED)
-//                .orderDetail()
-//                .build();
-//        return ordering;
-//    }
-
 }

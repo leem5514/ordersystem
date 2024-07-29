@@ -46,12 +46,12 @@ public class JwtAuthFilter extends GenericFilter {
                 String token = bearerToken.substring(7);
                 // token 검증 및 claim(사용자정보) 추출
                 // 토큰 생성 시 사용한 secretKey 값을 넣어 토큰 검증에 사용A
-                Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();  // 검증값
+                Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody(); //getBody 는 payload 에 들어있는 것.
                 //Authentication 객체 생성(userDetails 객체도 필요)
                 List<GrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + claims.get("role")));
+                authorities.add(new SimpleGrantedAuthority("ROLE_"+claims.get("role")));
                 UserDetails userDetails = new User(claims.getSubject(), "", authorities);
-                Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "",userDetails.getAuthorities());
+                Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             }

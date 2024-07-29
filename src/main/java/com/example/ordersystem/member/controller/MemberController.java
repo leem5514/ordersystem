@@ -33,16 +33,14 @@ import java.util.concurrent.TimeUnit;
 @RestController
 public class MemberController {
     private final MemberService memberService;
-
     private final MemberRepository memberRepository;
-
     private final JwtTokenProvider jwtTokenProvider;
 
     @Qualifier("2")
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Value("${jwt.secretKeyRt}")
-    private String secretKey;
+    private String secretKeyRt;
 
     @Autowired
     public MemberController(MemberService memberService, MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider, @Qualifier("2") RedisTemplate<String, Object> redisTemplate) {
@@ -70,6 +68,7 @@ public class MemberController {
     @GetMapping("member/list")
     public ResponseEntity<?> memberList(Pageable pageable) {
         Page<MemberListDto> memberListDtos = memberService.memberList(pageable);
+        //memberService.memberList(pageable);
         CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "success created", memberListDtos);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
@@ -86,7 +85,6 @@ public class MemberController {
     public ResponseEntity<?> doLogin(@RequestBody MemberLoginDto dto) {
         // email , pwd 일치 검증
         Member member = memberService.login(dto);
-
         // if 일치할경우 accessToken 생성
         String jwtToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole().toString());
         // 생성된 토큰을 CommonResDto 에 담아서 사용자에게 return
@@ -110,7 +108,7 @@ public class MemberController {
         Claims claims = null;
         try {
             // 코드를 통해서 rt 검증
-            claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(rt).getBody();  // 검증값
+            claims = Jwts.parser().setSigningKey(secretKeyRt).parseClaimsJws(rt).getBody();  // 검증값
         } catch( Exception e ) {
             return new ResponseEntity<>(new CommonErrorDto(HttpStatus.UNAUTHORIZED.value(), "invalid range"), HttpStatus.UNAUTHORIZED);
         }

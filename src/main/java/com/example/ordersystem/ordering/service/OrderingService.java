@@ -8,9 +8,10 @@ import com.example.ordersystem.ordering.domain.Ordering;
 import com.example.ordersystem.ordering.dto.OrderListResDto;
 import com.example.ordersystem.ordering.dto.OrderSaveReqDto;
 import com.example.ordersystem.ordering.repository.OrderingRepository;
+import com.example.ordersystem.ordering.repository.OrderDetailRepository;
 import com.example.ordersystem.product.domain.Product;
-import com.example.ordersystem.ordering.repository.OrderDetailReposiroy;
 import com.example.ordersystem.product.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +27,14 @@ public class OrderingService {
     private final OrderingRepository orderingRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
-    private final OrderDetailReposiroy orderDetailReposiroy;
+    private final OrderDetailRepository orderDetailRepository;
 
-    public OrderingService(OrderingRepository orderingRepository, MemberRepository memberRepository, ProductRepository productRepository, OrderDetailReposiroy orderDetailReposiroy) {
+    @Autowired
+    public OrderingService(OrderingRepository orderingRepository, MemberRepository memberRepository, ProductRepository productRepository, OrderDetailRepository orderDetailRepository) {
         this.orderingRepository  = orderingRepository;
         this.memberRepository = memberRepository;
         this.productRepository = productRepository;
-        this.orderDetailReposiroy = orderDetailReposiroy;
+        this.orderDetailRepository = orderDetailRepository;
     }
 
     /* 주분하기 */
@@ -56,34 +58,29 @@ public class OrderingService {
 //        return ordering;
 
 
-//        // 방법 2. JPA 에 최적화 된 방식
-//        Member member = memberRepository.findById(dtos.getMemberId()).orElseThrow(()->new EntityNotFoundException("Member not found"));
-//        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-//        Ordering ordering;
-//        Member member = memberRepository.findByEmail(memberEmail).orElseThrow(() -> new EntityNotFoundException("member not found"));
-//                        Ordering ordering = Ordering.builder().member(member).build();
-//        for(dtos : orderingRepository){
-//            Product product = productRepository.findById(orderDto.getProductId()).orElse(null);
-//            int quantity = orderDto.getProductCount();
-//            if (product.getStockQuantity() < quantity){
-//                throw new EntityNotFoundException("재고부족");
-//            } product.updateStock(quantity); //변경감지로 별도 save문 필요
-//            OrderDetail orderDetail =  OrderDetail.builder()
-//                    .product(product)
-//                    .quantity(quantity)
-//                    .ordering(ordering)
-//                    .build();
-//            ordering.getOrderDetails().add(orderDetail);
-//        }
-//        Ordering savedOrder = orderingRepository.save(ordering);
-//        return savedOrder;
-        return null;
-    }
-    public Ordering OrderUpdate(OrderSaveReqDto dto) {
-        return null;
+        // 방법 2. JPA 에 최적화 된 방식
+        //Member member = memberRepository.findById(dtos.getMemberId()).orElseThrow(()->new EntityNotFoundException("Member not found"));
+        String memberEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = memberRepository.findByEmail(memberEmail).orElseThrow(() -> new EntityNotFoundException("member not found"));
+        Ordering ordering = Ordering.builder().member(member).build();
+        for(OrderSaveReqDto orderDto : dtos){
+            Product product = productRepository.findById(orderDto.getProductId()).orElse(null);
+            int quantity = orderDto.getProductCount();
+            if (product.getStockQuantity() < quantity){
+                throw new EntityNotFoundException("재고부족");
+            }
+            product.updateStock(quantity); // 변경 감지(더티 체킹)로 인해 별도의 save 불필요함.
+            OrderDetail orderDetail = OrderDetail.builder()
+                    .product(product)
+                    .quantity(quantity)
+                    .ordering(ordering)
+                    .build();
+            ordering.getOrderDetails().add(orderDetail);
+        }
+        Ordering savedOrder = orderingRepository.save(ordering);
+        return savedOrder;
     }
 
-    //
     /* 전체 리스트 */
     public List<OrderListResDto> orderList(){
         List<Ordering> orderings = orderingRepository.findAll();
@@ -94,7 +91,6 @@ public class OrderingService {
         return orderListResDtos;
     }
 
-    //
     /* 내 주문 보기 */
     public List<OrderListResDto> myOrders(){
         Member member =memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).orElseThrow(() -> new EntityNotFoundException("Member not found"));
@@ -106,7 +102,6 @@ public class OrderingService {
         return orderListResDtos;
     }
 
-    //
     /* 주문 취소 (admin 기준) */
     public Ordering orderCancel(Long id) {
         Ordering ordering = orderingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Ordering not found"));

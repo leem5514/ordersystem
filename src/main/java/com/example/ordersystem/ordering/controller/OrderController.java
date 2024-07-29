@@ -16,22 +16,21 @@ import java.util.List;
 
 @RestController
 public class OrderController {
-
     private final OrderingService orderingService;
 
     public OrderController(OrderingService orderingService) {
         this.orderingService = orderingService;
     }
 
-    @PostMapping("order/create") // 생성
+    @PostMapping("/order/create") // 생성
     public ResponseEntity<?> orderingCreate(@RequestBody List<OrderSaveReqDto> dto) {
         Ordering ordering = orderingService.orderCreate(dto);
-        CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED, "success created", ordering.getId());
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED, "created order", ordering.getId());
         return new ResponseEntity<>(commonResDto, HttpStatus.CREATED);
     }
-    //
+
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("order/list")
+    @GetMapping("/order/list")
     public ResponseEntity<?> orderingList() {
         List<OrderListResDto> orderList = orderingService.orderList();
         CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "success created", orderList);
@@ -39,7 +38,7 @@ public class OrderController {
     }
 
     // 내 주문만 볼 수 있는 myOrders
-    @GetMapping("order/myorders")
+    @GetMapping("/order/myorders")
     public ResponseEntity<?> myOrderInfo() {
         List<OrderListResDto> orderList = orderingService.myOrders();
         CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "내 주문 내역에 접근합니다", orderList);
@@ -51,8 +50,8 @@ public class OrderController {
     @PatchMapping("/order/{id}/cancel")
     public ResponseEntity<?> orderCancel(@PathVariable Long id) {
         Ordering ordering = orderingService.orderCancel(id);
-        CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED, "정상 취소 완료", ordering.getId());
-        return new ResponseEntity<>(commonResDto, HttpStatus.CREATED);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "정상 취소 완료", ordering.getId());
+        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
 
