@@ -55,5 +55,8 @@ public class Ordering {
                 .build();
         return orderListResDto;
     }
+    public void updateStatus(OrderStatus orderStatus) {
+        this.orderstatus = orderStatus;
+    }
 
 }

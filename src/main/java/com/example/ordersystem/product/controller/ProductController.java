@@ -8,10 +8,12 @@ import com.example.ordersystem.product.domain.Product;
 import com.example.ordersystem.product.dto.ProductListResDto;
 import com.example.ordersystem.product.dto.ProductSaveDto;
 import com.example.ordersystem.product.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,10 +26,12 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
+    @Autowired
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
-
+    //
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/product/create") // 생성
     public ResponseEntity<?> productCreate(ProductSaveDto dto) {
         Product product = productService.productCreate(dto);

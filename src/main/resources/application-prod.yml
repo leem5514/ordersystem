@@ -19,6 +19,10 @@ spring:
       hibernate:
         ddl-auto: create
       show_sql: true
+jwt:
+  expiration: 30
+  secretKey: my_token_secret
+
   mybatis:
     mapper-locations: classpath:/mapper/**/*.xml
 

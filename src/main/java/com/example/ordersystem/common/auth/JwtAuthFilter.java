@@ -27,7 +27,9 @@ public class JwtAuthFilter extends GenericFilter {
 
     @Value("${jwt.secretKey}")
     private String secretKey;
+
     private final HttpServletResponse httpServletResponse;
+
     public JwtAuthFilter(HttpServletResponse httpServletResponse) {
         this.httpServletResponse = httpServletResponse;
     }

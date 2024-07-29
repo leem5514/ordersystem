@@ -18,23 +18,26 @@ import javax.validation.constraints.Size;
 @Data
 public class MemberSaveDto {
     private String name;
+
     @NotEmpty(message = "email is essential")
     private String email;
 
     @NotEmpty(message = "email is essential")
     //@Size(min = 8, message = "password minimum length is 8")
     private String password;
+
     private Address address;
 //    private String city;
 //    private String street;
 //    private String zipcode;
+    private Role role = Role.USER;
 
     public Member toEntity(String password) {
         Member member = Member.builder()
                 .name(this.name)
                 .email(this.email)
                 .password(password)
-                .role(Role.USER)
+                .role(this.role)
 //                .address(Address.builder().city(this.city).street(this.street).zipcode(this.zipcode).build())
                 .address(this.address)
                 .build();

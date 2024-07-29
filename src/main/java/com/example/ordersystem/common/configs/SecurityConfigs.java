@@ -23,7 +23,7 @@ public class SecurityConfigs {
                 .cors().and() // CORS 활성화  // 다른 도메인끼리 통신 불가
                 .httpBasic().disable()
                 .authorizeRequests()
-                .antMatchers("/member/create", "/" ,"/member/doLogin")
+                .antMatchers("/member/create", "/" ,"/doLogin", "/refresh-token")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()
