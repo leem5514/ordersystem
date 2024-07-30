@@ -31,5 +31,5 @@ mybatis:
 
 logging:
   level:
-    # 로그 레벨 : trace < debug < info < error  순서의 로그레벨을 가짐 -> 즉 info 으로 설정시 trace / debug 로그는 출력 x
+    # 로그 레벨 :  trace < debug < info < error  순서의 로그레벨을 가짐 -> 즉 info 으로 설정시 trace / debug 로그는 출력 x
     root : info
