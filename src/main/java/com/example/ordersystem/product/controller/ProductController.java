@@ -39,6 +39,7 @@ public class ProductController {
         return new ResponseEntity<>(commonResDto, HttpStatus.CREATED);
     }
 
+
     @GetMapping("/product/list")
     public ResponseEntity<?> productList(Pageable pageable) {
         Page<ProductListResDto> productListDtos = productService.productList(pageable);
