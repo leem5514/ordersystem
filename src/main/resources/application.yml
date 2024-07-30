@@ -1,6 +1,0 @@
-# STARTING POINT 는 application.yml 파일
-
-spring:
-  profiles:
-    active: local
-    //
