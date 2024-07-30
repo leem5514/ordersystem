@@ -17,7 +17,6 @@ import java.util.List;
 public class OrderSaveReqDto {
 //    private Long memberId;
 //    private List<OrderDetailDto> orderDetailDtoList;
-
 //    private OrderStatus orderStatus;
     private Long productId;
     private int productCount;
