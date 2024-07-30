@@ -48,6 +48,7 @@ public class Product {
         return ProductListResDto.builder().id(this.id).name(this.name).category(this.category).price(this.price).stockQuantity(this.stockQuantity).imagePath(imagePath).build();
     }
 
-    public void updateStock(int quantity) {
+    public void updateStockQuantity(int stockQuantity){
+        this.stockQuantity -= stockQuantity;
     }
 }

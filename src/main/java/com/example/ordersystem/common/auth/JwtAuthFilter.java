@@ -36,10 +36,11 @@ public class JwtAuthFilter extends GenericFilter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        String bearerToken = ((HttpServletRequest)request).getHeader("Authorization");
+        String bearerToken = ((HttpServletRequest) request).getHeader("Authorization");
         try {
-            if(bearerToken != null) {
-                // 토큰은 관례적으로 Bearer 로 시작하는 문구를 넣어서 요청한다.
+            if (bearerToken != null) {
+                // 토큰 있으면 처리, 없음 에러
+                // token 관례적으로 Bearer로 시작하는 문구를 넣어서 요청
                 if (!bearerToken.substring(0, 7).equals("Bearer ")) {
                     throw new AuthenticationServiceException("Bearer 형식이 아닙니다.");
                 }
@@ -53,9 +54,7 @@ public class JwtAuthFilter extends GenericFilter {
                 UserDetails userDetails = new User(claims.getSubject(), "", authorities);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
             }
-            //filterchain에서 그 다음 filtering으로 넘어가도록 하는 메서드
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             log.error(e.getMessage());

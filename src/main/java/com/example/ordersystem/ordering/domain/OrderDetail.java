@@ -19,7 +19,6 @@ public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,12 +29,12 @@ public class OrderDetail {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    public OrderListResDto.OrderDetailDto fromEntity() {
-        OrderListResDto.OrderDetailDto dto = OrderListResDto.OrderDetailDto.builder()
-                .productId(product.getId())
+    public OrderListResDto.OrderDetailDto fromEntity(){
+        OrderListResDto.OrderDetailDto orderDetailDto = OrderListResDto.OrderDetailDto.builder()
+                .id(this.id)
                 .productName(this.product.getName())
                 .count(this.quantity)
                 .build();
-        return dto;
+        return orderDetailDto;
     }
 }

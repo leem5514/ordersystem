@@ -21,15 +21,15 @@ import java.util.List;
 @Service
 @Transactional
 public class MemberService {
-
     private final MemberRepository memberRepository;
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
     public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
     }
-    @Transactional
+
     public Member memberCreate(MemberSaveDto dto) {
 
         if (memberRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -41,7 +41,7 @@ public class MemberService {
         Member savedMember = memberRepository.save(dto.toEntity(passwordEncoder.encode(dto.getPassword())));
         return savedMember;
     }
-    @Transactional
+
     public Page<MemberListDto> memberList(Pageable pageable) {
         Page<Member> memberListDtos = memberRepository.findAll(pageable);
         return memberListDtos.map(a -> a.listFromEntity());
@@ -51,15 +51,15 @@ public class MemberService {
         // email 존재 여부
         Member member = memberRepository.findByEmail(dto.getEmail()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 이메일입니다."));
 
-        // pwd 일치 여부
+        // pwd 일치 여부 ) 들어온 dto 의 password 를 암호화해서 암호화 된 DB의 데이터와 비교.
         if(!passwordEncoder.matches(dto.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다");
         }
         return member;
     }
 
-    public MemberSaveDto myInfo() {
+    public MemberListDto myInfo() {
         Member member = memberRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().toString()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 이메일입니다."));
-        return null;
+        return member.listFromEntity();
     }
 }

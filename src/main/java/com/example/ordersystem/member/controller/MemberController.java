@@ -55,7 +55,7 @@ public class MemberController {
 //        return "member/create";
 //    }
 
-    @PostMapping("member/create") // 생성
+    @PostMapping("/member/create") // 생성
     public ResponseEntity<Object> memberCreate(@Valid @RequestBody MemberSaveDto dto) {
         Member member = memberService.memberCreate(dto);
         CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED, "success created", member.getId());
@@ -65,19 +65,20 @@ public class MemberController {
 
     // admin 만 회원 전체 목록 조회 가능
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("member/list")
+    @GetMapping("/member/list")
     public ResponseEntity<?> memberList(Pageable pageable) {
-        Page<MemberListDto> memberListDtos = memberService.memberList(pageable);
-        //memberService.memberList(pageable);
-        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "success created", memberListDtos);
-        return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        Page<MemberListDto> listDto = memberService.memberList(pageable);
+        memberService.memberList(pageable);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "회원 목록 조회 성공 !", listDto);
+        ResponseEntity<CommonResDto> result = new ResponseEntity<>(commonResDto, HttpStatus.OK);
+        return result;
     }
 
     // 본인은 본인 회원 정보만 조회 가능
-    @GetMapping("member/myinfo")
+    @GetMapping("/member/myinfo")
     public ResponseEntity memberMyInfo() {
-        MemberSaveDto memberSaveDto = memberService.myInfo();
-        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "success join", memberSaveDto);
+        MemberListDto memberListDto = memberService.myInfo();
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "회원 조회 성공", memberListDto);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
@@ -90,45 +91,47 @@ public class MemberController {
         // 생성된 토큰을 CommonResDto 에 담아서 사용자에게 return
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getEmail(), member.getRole().toString());
 
-        // redis에 email과 rt을 키 벨류로 하여 저장
+        // redis에 email 과 rt을 키 벨류로 형태 저장
         redisTemplate.opsForValue().set(member.getEmail(), refreshToken, 240, TimeUnit.HOURS);
 
+        // 생성된 토큰을 CommonResDto 에 담아 사용자에게 return.
         Map<String, Object> loginInfo = new HashMap<>();
         loginInfo.put("id", member.getId());
         loginInfo.put("token", jwtToken);
         loginInfo.put("refreshToken", refreshToken);
-        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "success login", loginInfo);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "로그인 성공 !", loginInfo);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
     }
 
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> generateNewAccessToken(@RequestBody MemberRefreshDto dto) {
+    public ResponseEntity<?> generateNewAccessToken(@RequestBody MemberRefreshDto dto){
         String rt = dto.getRefreshToken();
         Claims claims = null;
-        try {
-            // 코드를 통해서 rt 검증
-            claims = Jwts.parser().setSigningKey(secretKeyRt).parseClaimsJws(rt).getBody();  // 검증값
-        } catch( Exception e ) {
-            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.UNAUTHORIZED.value(), "invalid range"), HttpStatus.UNAUTHORIZED);
+        try{
+            // 코드를 통해 rt 검증
+            claims = Jwts.parser().setSigningKey(secretKeyRt).parseClaimsJws(rt).getBody(); //getBody 는 payload 에 들어있는 것.
         }
+        catch (Exception e){
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.UNAUTHORIZED.value(),"invalid refresh token"),HttpStatus.UNAUTHORIZED);
+        }
+
         String email = claims.getSubject();
         String role = claims.get("role").toString();
 
-        // redis을 조회해서 rt 추가 검증 
+        // redis 를 통한 rt 추가 검증 조회
         Object obj = redisTemplate.opsForValue().get(email);
-        if (obj == null || (obj.toString().equals(rt))) {
-            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.UNAUTHORIZED.value(), "invalid range"), HttpStatus.UNAUTHORIZED);
+        if(obj == null || !obj.toString().equals(rt)){
+            return new ResponseEntity<>(new CommonErrorDto(HttpStatus.UNAUTHORIZED.value(),"invalid refresh token"),HttpStatus.UNAUTHORIZED);
         }
 
+        String newAt = jwtTokenProvider.createToken(email, role);
 
-        String newAt = jwtTokenProvider.createRefreshToken(email, role);
-
+        // 생성된 토큰을 CommonResDto 에 담아 사용자에게 return.
         Map<String, Object> info = new HashMap<>();
         info.put("token", newAt);
-        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "at is renewed", info);
+        CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "AT is renewed", info);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
-
     }
 
 }

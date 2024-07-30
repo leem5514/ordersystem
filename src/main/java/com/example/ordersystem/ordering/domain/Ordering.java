@@ -51,7 +51,6 @@ public class Ordering {
                 .memberEmail(this.member.getEmail())
                 .orderStatus(this.orderstatus)
                 .orderDetailDtos(orderDetailDtos)
-
                 .build();
         return orderListResDto;
     }

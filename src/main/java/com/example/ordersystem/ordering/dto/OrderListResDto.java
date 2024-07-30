@@ -23,7 +23,7 @@ public class OrderListResDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OrderDetailDto {
-        private Long productId;
+        private Long id;
         private String productName;
         private Integer count;
     }
