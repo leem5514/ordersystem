@@ -115,7 +115,7 @@ public class MemberController {
         String email = claims.getSubject();
         String role = claims.get("role").toString();
 
-        // redis을 조회해서 rt 추가 검증
+        // redis을 조회해서 rt 추가 검증 
         Object obj = redisTemplate.opsForValue().get(email);
         if (obj == null || (obj.toString().equals(rt))) {
             return new ResponseEntity<>(new CommonErrorDto(HttpStatus.UNAUTHORIZED.value(), "invalid range"), HttpStatus.UNAUTHORIZED);

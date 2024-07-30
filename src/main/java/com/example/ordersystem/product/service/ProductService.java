@@ -54,4 +54,20 @@ public class ProductService {
         return productListDtos.map(a -> a.listFromEntity());
     }
 
+    @Transactional
+    public Product productAwsCreate(ProductSaveDto dto) {
+        MultipartFile image = dto.getProductImage();
+        Product product = null;
+        try {
+            product = productRepository.save(dto.toEntity());
+            byte[] bytes = image.getBytes();
+            Path path = Paths.get("C:/springboot_img/", product.getId() + "_" + image.getOriginalFilename());
+            Files.write(path, bytes, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+            product.updateImagePath(path.toString());
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 저장 실패");
+        }
+        return product;
+    }
+
 }
